@@ -1,0 +1,52 @@
+pipeline {
+  agent any
+
+  environment {
+    APP_NAME = "mygithub pipeline"
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+       echo "building $APP_NAME"
+      }
+      // if you're on Windows replace with:
+      // steps { bat 'echo Building %APP_NAME%' ; bat 'mkdir output && echo artifact content > output\\%APP_NAME%.txt' }
+    }
+
+    stage('Test') {
+      steps {
+        echo "testing $APP_NAME..."
+      }
+    }
+
+    stage('Archive') {
+      steps {
+        echo "archiving  $APP_NAME ...."
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "=== This runs regardless of build status ==="
+      
+    }
+    success {
+      echo "✅ Build succeeded: ${env.BUILD_NUMBER}"
+      // Example: send email (requires email-ext plugin and configuration)
+      // emailext subject: "SUCCESS: Build ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      //          body: "Good news! Build succeeded.",
+      //          to: 'team@example.com'
+    }
+    failure {
+      echo "❌ Build failed: ${env.BUILD_NUMBER}"
+    }
+    unstable {
+      echo "⚠️ Build is unstable (tests had warnings or non-fatal issues)"
+    }
+    changed {
+      echo "🔄 Build status changed from previous build"
+    }
+  }
+}
